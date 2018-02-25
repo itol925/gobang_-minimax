@@ -5,68 +5,75 @@
 // --------------------------------------------------------------------
 
 namespace WZQ{
-    const MAX = Weight.CHENG_WU * 100
-    const MIN = -1 * MAX
 
     export class wzqAI {
+        private MAX = Weight.CHENG_WU * 100
+        private MIN = -1 * this.MAX
+
         private optionLimit:number = 6 // 每一步棋考虑的广度，即多少个候选项
         private aiDeep:number = 9 // 搜索深度，只能为奇数
-
         private alphaCut = 0
         private betaCut = 0
         private total = 0
         private optionIndex = 0
         private optionCount = 0
+        private searchDeep = 0
 
         private chessboard:wzqChessBoard
         private color:wzqColor
         private enemyColor:wzqColor
-        constructor(cb:wzqChessBoard, color:wzqColor){
+        constructor(cb:wzqChessBoard){
             this.chessboard = cb
-            this.color = color
-            this.enemyColor = this.color == wzqColor.black ? wzqColor.white : wzqColor.black
         }
-        public get Color():wzqColor{
-            return this.color
+        /**
+         * difficult within range [1, 4] 
+         */
+        public set Difficult(difficult:number){
+            difficult = Math.floor(difficult)
+            if(difficult >= 4){
+                this.aiDeep = 9
+            }else if(difficult >= 3){
+                this.aiDeep = 7
+            }else if(difficult >= 2){
+                this.aiDeep = 5
+            }else{
+                this.aiDeep = 1
+            }
         }
 
-        public put(onPut:Function, thisObj:any){
-            var startTime = egret.getTimer()
-            console.log('ai start move..')
-            egret.setTimeout(()=>{
-                var pos = null
-                var deep = this.aiDeep
-                if(this.chessboard.stepIndex == 0){
-                    var size = this.chessboard.RowCount < this.chessboard.ColCount ? this.chessboard.RowCount : this.chessboard.ColCount
-                    var s = Math.floor(size/3)                    
-                    var row = s + Math.floor(Math.random() * s) 
-                    var col = s + Math.floor(Math.random() * s)
+        public put(color:wzqColor){
+            this.color = color
+            this.enemyColor = this.color == wzqColor.black ? wzqColor.white : wzqColor.black
+            
+            var pos = null
+            this.searchDeep = this.aiDeep
+            if(this.chessboard.stepIndex == 0){
+                var size = this.chessboard.RowCount < this.chessboard.ColCount ? this.chessboard.RowCount : this.chessboard.ColCount
+                var s = Math.floor(size/3)
+                var row = s + Math.floor(Math.random() * s) 
+                var col = s + Math.floor(Math.random() * s)
+                pos = {row:row, col:col}
+            }else{
+                if(this.chessboard.stepIndex == 1){
+                    this.searchDeep = 1
+                }else if(this.chessboard.stepIndex <= 4 && this.searchDeep > 3){
+                    this.searchDeep = 3
+                }else if(this.chessboard.stepIndex <= 8 && this.searchDeep > 5){
+                    this.searchDeep = 5
+                }else if(this.chessboard.stepIndex <= 12 && this.searchDeep > 7){
+                    this.searchDeep = 7
+                }
+                var p = this.negamax(this.searchDeep)
+                if(p){
+                    row = p.row
+                    col = p.col
                     pos = {row:row, col:col}
                 }else{
-                    if(this.chessboard.stepIndex == 1){
-                        deep = 1
-                    }else if(this.chessboard.stepIndex <= 4 && deep > 3){
-                        deep = 3
-                    }else if(this.chessboard.stepIndex <= 8 && deep > 5){
-                        deep = 5
-                    }else if(this.chessboard.stepIndex <= 12 && deep > 7){
-                        deep = 7
-                    }
-                    var p = this.negamax(deep)
-                    if(p){
-                        row = p.row
-                        col = p.col
-                        pos = {row:row, col:col}
-                    }else{
-                        console.error('ai failed found pos')
-                        pos = null
-                    }
+                    console.error('ai failed found pos')
+                    pos = null
                 }
-                var costTime = egret.getTimer() - startTime
-                console.log('ai move finished! deep:' + deep + ' total:' + this.total + " alphaCut:" + this.alphaCut + " betaCut:" + this.betaCut + 
-                    " costTime:" + costTime + " nodeTime:" + (costTime/this.total).toFixed(2) + " optionIndex:" + this.optionIndex + " optionCount:" + this.optionCount)
-                onPut.call(thisObj, pos)
-            }, this, 200)            
+            }
+            return pos
         }
         private evaluate():number{
             var sw = 0
@@ -125,7 +132,7 @@ namespace WZQ{
             this.betaCut = 0
             this.total = 0
 
-            var alpha = MIN
+            var alpha = this.MIN
             var options = this.getOptions(this.color)
             // var str = ''
             // for(var i = 0; i < options.length; i++){
@@ -176,14 +183,14 @@ namespace WZQ{
             if(deep <= 0){
                 return this.evaluate()
             }else{
-                var beta = MAX
+                var beta = this.MAX
                 var options = this.getOptions(this.enemyColor)
                 for(var i = 0; i < options.length; i++){
                     var p = options[i]
                     this.chessboard.put(p.row, p.col, this.enemyColor)
                     var val
                     if(this.chessboard.getWinner() == this.enemyColor || this.chessboard.isDraw()){
-                        val = MIN
+                        val = this.MIN
                     }else{
                         val = this.max(deep - 1, beta) * 0.9
                     }             
@@ -204,14 +211,14 @@ namespace WZQ{
             if(deep <= 0){
                 return this.evaluate()
             }else{
-                var alpha = MIN
+                var alpha = this.MIN
                 var options = this.getOptions(this.color)
                 for(var i = 0; i < options.length; i++){
                     var p = options[i]
                     this.chessboard.put(p.row, p.col, this.color)
                     var val
                     if(this.chessboard.getWinner() == this.color || this.chessboard.isDraw()){
-                        val = MAX
+                        val = this.MAX
                     }else{
                         val = this.min(deep - 1, alpha) * 0.9
                     }
@@ -226,6 +233,31 @@ namespace WZQ{
                 }
                 return alpha
             }
+        }
+
+        public get OptionLimit():number{
+            return this.optionLimit
+        }
+        public get AiDeep():number{
+            return this.aiDeep
+        }
+        public get AlphaCut():number{
+            return this.alphaCut
+        }
+        public get BetaCut():number{
+            return this.betaCut
+        }
+        public get Total():number{
+            return this.total
+        }
+        public get OptionIndex():number{
+            return this.optionIndex
+        }
+        public get OptionCount():number{
+            return this.optionCount
+        }
+        public get SearchDeep():number{
+            return this.searchDeep
         }
     }
 }

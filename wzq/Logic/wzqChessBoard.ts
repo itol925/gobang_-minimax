@@ -13,6 +13,9 @@ namespace WZQ{
 
         private posList = []
 
+        public enableForb33:boolean = false
+        public enableForb44:boolean = false
+
         constructor(rowCount:number, colCount:number){
             this.posChart = new Array<Array<wzqPos>>()
             this.rowCount = rowCount
@@ -123,6 +126,42 @@ namespace WZQ{
             Evaluate.updateWeights(ud, Line.U_D)
             Evaluate.updateWeights(lu_rd, Line.LU_RD)
             Evaluate.updateWeights(ld_ru, Line.LD_RU)
+            if(this.enableForb33 || this.enableForb44){
+                var last = this.LastPos
+                if(last){
+                    if(last.color == wzqColor.white){
+                        this.addForbidden()
+                    }else{
+                        this.removeForbidden()
+                    }
+                }
+            }
+        }
+        private addForbidden(){
+            for(var r = 0; r < this.colCount; r++){
+                for(var c = 0; c < this.rowCount; c++){
+                    var pos = this.posChart[r][c]
+                    if(this.enableForb33){
+                        if(pos.isForb33()){
+                            pos.color = wzqColor.forbidden
+                        }
+                    }else if(this.enableForb44){
+                        if(pos.isForb44()){
+                            pos.color = wzqColor.forbidden
+                        }
+                    }
+                }
+            } 
+        }
+        private removeForbidden(){
+            for(var r = 0; r < this.colCount; r++){
+                for(var c = 0; c < this.rowCount; c++){
+                    var pos = this.posChart[r][c]
+                    if(pos.color == wzqColor.forbidden){
+                        pos.color = wzqColor.none
+                    }
+                }
+            } 
         }
         
         public getNearbyColor(r:number, c:number, step:number, l:Line):wzqColor{

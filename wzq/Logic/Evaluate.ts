@@ -9,6 +9,7 @@ namespace WZQ{
         CHENG_WU		=	1000000,		// 五连
 
         LIAN_HUO_SI		=	10000,			// 连活四
+        TIAO_HUO_SI     =   4001,           // 跳活四
         LIAN_MIAN_SI	=	4000,			// 连眠四
 
         LIAN_HUO_SAN	=	3500,			// 连活三
@@ -21,16 +22,39 @@ namespace WZQ{
         LIAN_MIAN_ER	=	2,				// 连眠二
         TIAO_MIAN_ER	=	1				// 跳眠二
     };
+    export var WeightList = [
+        Weight.CHENG_WU,
+        Weight.LIAN_HUO_SI, Weight.TIAO_HUO_SI, Weight.LIAN_MIAN_SI,
+        Weight.LIAN_HUO_SAN, Weight.TIAO_HUO_SAN, Weight.LIAN_MIAN_SAN, Weight.TIAO_MIAN_SAN, 
+        Weight.LIAN_HUO_ER, Weight.TIAO_HUO_ER, Weight.LIAN_MIAN_ER, Weight.TIAO_MIAN_ER, 
+    ]
+    export var WeightName = {
+        [Weight.CHENG_WU] : "成五",
+
+        [Weight.LIAN_HUO_SI] : "连活四",
+        [Weight.TIAO_HUO_SI] : "跳活四",
+        [Weight.LIAN_MIAN_SI] : "连眠四",
+
+        [Weight.LIAN_HUO_SAN] : "连活三",
+        [Weight.TIAO_HUO_SAN] : "跳活三",
+        [Weight.LIAN_MIAN_SAN] : "连眠三",
+        [Weight.TIAO_MIAN_SAN] : "跳眠三",
+
+        [Weight.LIAN_HUO_ER] : "连活二",
+        [Weight.TIAO_HUO_ER] : "跳活二",
+        [Weight.LIAN_MIAN_ER] : "连眠二",
+        [Weight.TIAO_MIAN_ER] : "跳眠二",
+    }
     
     export enum Line {
-        L_R,
-        U_D,
-        LU_RD,
-        LD_RU
+        L_R = 1,
+        U_D = 2,
+        LU_RD = 3,
+        LD_RU = 4
     };
 
     export class Evaluate {
-        private static LineValues = [Line.L_R, Line.U_D, Line.LU_RD, Line.LD_RU]
+        // private static LineValues = [Line.L_R, Line.U_D, Line.LU_RD, Line.LD_RU]
         private static chessTypes = [
             {
                 weight:Weight.CHENG_WU,
@@ -42,6 +66,14 @@ namespace WZQ{
                 weight:Weight.LIAN_HUO_SI,
                 templates:[
                     [0,1,1,1,1,0],
+                ]
+            },
+            {
+                weight:Weight.TIAO_HUO_SI,
+                templates:[
+                    [1,1,0,1,1],
+                    [1,0,1,1,1],
+                    [1,1,1,0,1],
                 ]
             },
             {
@@ -108,7 +140,7 @@ namespace WZQ{
                 ]
             }
         ]
-        private static getDif(arr:number[], template:number[]):number[]{
+        private static getMatchIndex(arr:number[], template:number[]):number[]{
             var difIndex = []
             for(var i = 0; i <= arr.length - template.length; i++){
                 var matchCount = 0
@@ -155,13 +187,13 @@ namespace WZQ{
                 var chessType = this.chessTypes[ct]
                 for(var t = 0; t < chessType.templates.length; t++){
                     var template = chessType.templates[t]
-                    var blackIndex = this.getDif(blackArr, template)
-                    var whiteIndex = this.getDif(whiteArr, template)
+                    var blackIndex = this.getMatchIndex(blackArr, template)
                     if(blackIndex.length > 0){
                         for(var i = 0; i < blackIndex.length; i++){
                             arr[blackIndex[i]].setWei(chessType.weight, wzqColor.black, line)
                         }
                     }
+                    var whiteIndex = this.getMatchIndex(whiteArr, template)
                     if(whiteIndex.length > 0){
                         for(var i = 0; i < whiteIndex.length; i++){
                             arr[whiteIndex[i]].setWei(chessType.weight, wzqColor.white, line)
