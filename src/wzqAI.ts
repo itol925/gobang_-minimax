@@ -46,13 +46,12 @@ namespace WZQ{
             this.enemyColor = this.color == wzqColor.black ? wzqColor.white : wzqColor.black
             
             var pos = null
+            var row = 0, col = 0
             this.searchDeep = this.aiDeep
             if(this.chessboard.stepIndex == 0){
-                var size = this.chessboard.RowCount < this.chessboard.ColCount ? this.chessboard.RowCount : this.chessboard.ColCount
-                var s = Math.floor(size/3)
-                var row = s + Math.floor(Math.random() * s) 
-                var col = s + Math.floor(Math.random() * s)
+                row = col = Math.floor(this.chessboard.Size/2)
                 pos = {row:row, col:col}
+                this.searchDeep = 0
             }else{
                 if(this.chessboard.stepIndex == 1){
                     this.searchDeep = 1
@@ -78,8 +77,8 @@ namespace WZQ{
         private evaluate():number{
             var sw = 0
             var ew = 0
-            for(var r = 0; r < this.chessboard.ColCount; r++){
-                for(var c = 0; c < this.chessboard.RowCount; c++){
+            for(var r = 0; r < this.chessboard.Size; r++){
+                for(var c = 0; c < this.chessboard.Size; c++){
                     var pos = this.chessboard.PosChart[r][c]
                     if(pos.color == wzqColor.none){
                         sw += pos.getWei(this.color)
@@ -92,8 +91,8 @@ namespace WZQ{
         private getOptions(thisColor:wzqColor):Array<wzqPos>{
             var oppoColor = thisColor == wzqColor.black ? wzqColor.white : wzqColor.black
             var options = []
-            for(var r = 0; r < this.chessboard.ColCount; r++){
-                for(var c = 0; c < this.chessboard.RowCount; c++){
+            for(var r = 0; r < this.chessboard.Size; r++){
+                for(var c = 0; c < this.chessboard.Size; c++){
                     var pos = this.chessboard.PosChart[r][c]
                     if(pos.color == wzqColor.none){
                         if(thisColor == wzqColor.black && pos.isForb(this.chessboard.enableForb33, this.chessboard.enableForb44)){

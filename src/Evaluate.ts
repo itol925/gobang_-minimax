@@ -140,7 +140,17 @@ namespace WZQ{
                 ]
             }
         ]
-        private static getMatchIndex(arr:number[], template:number[]):number[]{
+        private static printArr(txt:string, arr:number[]){
+            var s = txt
+            for(var i = 0; i < arr.length; i++){
+                s = s + arr[i]
+                if(i < arr.length - 1){
+                    s += ','
+                }
+            }
+            console.log(s)
+        }
+        private static getMatchIndex(arr:number[], template:number[]):number[]{            
             var difIndex = []
             for(var i = 0; i <= arr.length - template.length; i++){
                 var matchCount = 0
@@ -159,7 +169,7 @@ namespace WZQ{
                         }
                     }
                 }
-                if(dif > 0){
+                if(dif >= 0){
                     difIndex.push(dif)
                 }
             }
@@ -189,9 +199,14 @@ namespace WZQ{
                     var template = chessType.templates[t]
                     var blackIndex = this.getMatchIndex(blackArr, template)
                     if(blackIndex.length > 0){
+                        // this.printArr('arr:', blackArr)
+                        // this.printArr(chessType.weight + 'tmp:', template)
+                        // var ddd = []
                         for(var i = 0; i < blackIndex.length; i++){
+                            // ddd.push(blackIndex[i])
                             arr[blackIndex[i]].setWei(chessType.weight, wzqColor.black, line)
                         }
+                        // this.printArr('dif:', ddd)
                     }
                     var whiteIndex = this.getMatchIndex(whiteArr, template)
                     if(whiteIndex.length > 0){

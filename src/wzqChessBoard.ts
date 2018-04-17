@@ -8,18 +8,16 @@ namespace WZQ{
     export class wzqChessBoard{
         private posChart:Array<Array<wzqPos>> = null   //存放棋子的二维数组
         
-        private rowCount:number = 15    //最大行数
-        private colCount:number = 15    //最大列数
+        private size:number = 15
 
         private posList = []
 
         public enableForb33:boolean = false
         public enableForb44:boolean = false
 
-        constructor(rowCount:number, colCount:number){
+        constructor(s:number){
             this.posChart = new Array<Array<wzqPos>>()
-            this.rowCount = rowCount
-            this.colCount = colCount
+            this.size = s
             
             this.reset()
         }
@@ -28,14 +26,13 @@ namespace WZQ{
         public get stepIndex():number{
             return this.posList.length
         }
-        public get RowCount():number { return this.rowCount }
-        public get ColCount():number { return this.colCount }
+        public get Size():number { return this.size }
 
         // 重置棋盘
         public reset(){
-            for(var r = 0; r < this.rowCount; r++){
+            for(var r = 0; r < this.size; r++){
                 this.posChart[r] = new Array<wzqPos>()
-                for(var c = 0; c < this.colCount; c++){
+                for(var c = 0; c < this.size; c++){
                     this.posChart[r].push(new wzqPos(r, c))
                 }
             } 
@@ -55,7 +52,7 @@ namespace WZQ{
         }
         // 落子
         public put(row:number, col:number, color:wzqColor):wzqPos {
-            if(row >= this.rowCount || col >= this.colCount){
+            if(row >= this.size || col >= this.size){
                 return null;
             }
             if(this.posChart[row][col].color != wzqColor.none){
@@ -80,8 +77,8 @@ namespace WZQ{
         }
         public printWeight(){
             var s = ''
-            for(var r = 0; r < this.colCount; r++){
-                for(var c = 0; c < this.rowCount; c++){
+            for(var r = 0; r < this.size; r++){
+                for(var c = 0; c < this.size; c++){
                     var pos = this.posChart[r][c]
                     var bw = pos.getWei(wzqColor.black)
                     var ww = pos.getWei(wzqColor.white)
@@ -155,7 +152,7 @@ namespace WZQ{
                     console.error("error Line option l=" + l)
                     break
             }
-            if(lr < 0 || lr >= this.colCount || lc < 0 || lc >= this.rowCount){
+            if(lr < 0 || lr >= this.size || lc < 0 || lc >= this.size){
                 return null
             }else{
                 return this.posChart[lr][lc]
@@ -202,8 +199,8 @@ namespace WZQ{
 
         public getWinner():wzqColor{
             var lines = [Line.L_R, Line.U_D, Line.LU_RD, Line.LD_RU]
-            for(var r = 0; r < this.colCount; r++){
-                for(var c = 0; c < this.rowCount; c++){
+            for(var r = 0; r < this.size; r++){
+                for(var c = 0; c < this.size; c++){
                     var pos = this.posChart[r][c]
                     if(pos.color == wzqColor.black || pos.color == wzqColor.white){
                         for(var l = 0; l < lines.length; l++){
@@ -228,7 +225,7 @@ namespace WZQ{
 
         // 所有的空位都下满了，和棋
         public isDraw():boolean{
-            return this.posList.length >= this.colCount * this.rowCount
+            return this.posList.length >= this.size * this.size
         }
     }
 }
