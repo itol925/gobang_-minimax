@@ -28,6 +28,21 @@ namespace WZQ{
         }
         public get Size():number { return this.size }
 
+        public get Steps():any{
+            var b = 0
+            var w = 0
+            for(var i = 0; i < this.posList.length; i++){
+                if(this.posList[i].color == wzqColor.black){
+                    b++
+                }else if(this.posList[i].color == wzqColor.white){
+                    w++
+                }
+            }
+            return {
+                black:b,
+                white:w
+            }
+        }
         // 重置棋盘
         public reset(){
             for(var r = 0; r < this.size; r++){

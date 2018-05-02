@@ -21,7 +21,7 @@ namespace WZQ{
         private w_sum_weight = 0
         private b_weight_details = {}
         private w_weight_details = {}
-        public fromPlayer:boolean = false;
+        public fromPlayer:boolean = false
 
         public color:wzqColor = wzqColor.none
         constructor(r:number, c:number){
@@ -30,6 +30,9 @@ namespace WZQ{
             this.clearWei()
         }
         public setWei(weight:Weight, color:wzqColor, line:Line){
+            if(this.getWeightCount(color, weight, line) > 0){ // 同格子同一线上的同一权重只能有一次
+                return
+            }
             if(color == wzqColor.black){
                 if(!this.b_weight_details[line][weight]){
                    this.b_weight_details[line][weight] = 0

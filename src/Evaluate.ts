@@ -196,7 +196,7 @@ namespace WZQ{
             for(var ct = 0; ct < this.chessTypes.length; ct++){
                 var chessType = this.chessTypes[ct]
                 for(var t = 0; t < chessType.templates.length; t++){
-                    var template = chessType.templates[t]
+                    var template = chessType.templates[t]                    
                     var blackIndex = this.getMatchIndex(blackArr, template)
                     if(blackIndex.length > 0){
                         // this.printArr('arr:', blackArr)
