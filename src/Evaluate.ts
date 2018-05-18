@@ -176,23 +176,25 @@ namespace WZQ{
             return difIndex
         }
         public static updateWeights(arr:Array<wzqPos>, line:Line){
-            var blackArr = []
-            var whiteArr = []
+            var blackArr = [2]
+            var whiteArr = [2]
             for(var i = 0; i < arr.length; i++){
-                if(arr[i].color == wzqColor.none){
+                if(arr[i].Color == wzqColor.none){
                     blackArr.push(0)
                     whiteArr.push(0)
-                }else if(arr[i].color == wzqColor.black){
+                }else if(arr[i].Color == wzqColor.black){
                     blackArr.push(1)
                     whiteArr.push(2)
-                }else if(arr[i].color == wzqColor.white){
+                }else if(arr[i].Color == wzqColor.white){
                     blackArr.push(2)
                     whiteArr.push(1)
-                }else if(arr[i].color == wzqColor.forbidden){
+                }else if(arr[i].Color == wzqColor.forbidden){
                     blackArr.push(2)
                     whiteArr.push(2)
                 }
             }
+            blackArr.push(2)
+            whiteArr.push(2)
             for(var ct = 0; ct < this.chessTypes.length; ct++){
                 var chessType = this.chessTypes[ct]
                 for(var t = 0; t < chessType.templates.length; t++){
@@ -204,14 +206,14 @@ namespace WZQ{
                         // var ddd = []
                         for(var i = 0; i < blackIndex.length; i++){
                             // ddd.push(blackIndex[i])
-                            arr[blackIndex[i]].setWei(chessType.weight, wzqColor.black, line)
+                            arr[blackIndex[i] - 1].setWei(chessType.weight, wzqColor.black, line)
                         }
                         // this.printArr('dif:', ddd)
                     }
                     var whiteIndex = this.getMatchIndex(whiteArr, template)
                     if(whiteIndex.length > 0){
                         for(var i = 0; i < whiteIndex.length; i++){
-                            arr[whiteIndex[i]].setWei(chessType.weight, wzqColor.white, line)
+                            arr[whiteIndex[i] - 1].setWei(chessType.weight, wzqColor.white, line)
                         }
                     }
                 }

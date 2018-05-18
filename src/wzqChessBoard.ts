@@ -70,11 +70,11 @@ namespace WZQ{
             if(row >= this.size || col >= this.size){
                 return null;
             }
-            if(this.posChart[row][col].color != wzqColor.none){
+            if(this.posChart[row][col].Color != wzqColor.none){
                 console.log('try put invalide pos r:' + row + ' c:' + col + ' color:' + color)
                 return null;
             }
-            this.posChart[row][col].color = color
+            this.posChart[row][col].Color = color
             this.posChart[row][col].clearWei()
             this.posList.push(this.posChart[row][col])
             this.updateWeight(this.posChart[row][col])
@@ -98,39 +98,48 @@ namespace WZQ{
                     var bw = pos.getWei(wzqColor.black)
                     var ww = pos.getWei(wzqColor.white)
                     if(bw > 0 || ww > 0){
-                        s += '[' + pos.row + ',' + pos.col + ']:{b:'+ bw + ' w:' + ww +'}\n'
+                        s += '[' + pos.Row + ',' + pos.Col + ']:{b:'+ bw + ' w:' + ww +'}\n'
                     }
                 }
             } 
             console.log(s)
         }
         public updateWeight(pos:wzqPos):void{
-            var lr = []
+            var row = pos.Row
+            var col = pos.Col
+            
+            var lr = []       
             var ud = []
-            var ld_ru = []
-            var lu_rd = []
-            for(var i = -12; i < 12; i++){
-                var p = this.getNeighbor(pos.row, pos.col, i, Line.L_R)
-                if(p){
-                    p.clearWei(Line.L_R)
-                    lr.push(p)
-                }
-                p = this.getNeighbor(pos.row, pos.col, i, Line.U_D)
-                if(p){
-                    p.clearWei(Line.U_D)
-                    ud.push(p)
-                }
-                p = this.getNeighbor(pos.row, pos.col, i, Line.LD_RU)
-                if(p){
-                    p.clearWei(Line.LD_RU)
-                    ld_ru.push(p)
-                }
-                p = this.getNeighbor(pos.row, pos.col, i, Line.LU_RD)
-                if(p){
-                    p.clearWei(Line.LU_RD)
-                    lu_rd.push(p)
-                }
+            for(var i = 0; i < this.size; i++){
+                var p = this.posChart[row][i]
+                p.clearWei(Line.L_R)
+                lr.push(p)
+
+                p = this.posChart[i][col]
+                p.clearWei(Line.U_D)
+                ud.push(p)
             }
+            
+            var lu_rd = []
+            var delta = row < col ? row : col
+            var startRow = row - delta
+            var startCol = col - delta
+            for(var r = startRow, c = startCol; r < this.size && c < this.size; r++, c++){
+                var p = this.posChart[r][c]
+                p.clearWei(Line.LU_RD)
+                lu_rd.push(p)
+            }
+
+            var ld_ru = []
+            delta = (this.size - 1 - row) < col ? (this.size - 1 - row) : col
+            startRow = row + delta
+            startCol = col - delta
+            for(var r = startRow, c = startCol; r >= 0 && c < this.size; r--, c++){
+                var p = this.posChart[r][c]
+                p.clearWei(Line.LD_RU)
+                ld_ru.push(p)
+            }
+
             Evaluate.updateWeights(lr, Line.L_R)
             Evaluate.updateWeights(ud, Line.U_D)
             Evaluate.updateWeights(lu_rd, Line.LU_RD)
@@ -140,7 +149,7 @@ namespace WZQ{
         public getNearbyColor(r:number, c:number, step:number, l:Line):wzqColor{
             var neighbor = this.getNeighbor(r, c, step, l)
             if(neighbor){
-                return neighbor.color
+                return neighbor.Color
             }
             return wzqColor.forbidden
         }
@@ -174,62 +183,24 @@ namespace WZQ{
             }
         }
 
-        public hasNeighborAtLine(r:number, c:number, line:Line):boolean{
-            for(var i = -2; i <= 2; i++){
-                if(i == 0){
-                    continue
-                }
-                var color = this.getNearbyColor(r, c, i, line)
-                if(color == wzqColor.black || color == wzqColor.white){
-                    return true
-                }
-            }
-            return false
-        }
-
-        public hasNeighbor(r:number, c:number):boolean{
-            for(var i = -2; i <= 2; i++){
-                if(i == 0){
-                    continue
-                }
-                var color = this.getNearbyColor(r, c, i, Line.L_R)
-                if(color == wzqColor.black || color == wzqColor.white){
-                    return true
-                }
-                color = this.getNearbyColor(r, c, i, Line.U_D)
-                if(color == wzqColor.black || color == wzqColor.white){
-                    return true
-                }
-                color = this.getNearbyColor(r, c, i, Line.LD_RU)
-                if(color == wzqColor.black || color == wzqColor.white){
-                    return true
-                }
-                color = this.getNearbyColor(r, c, i, Line.LU_RD)
-                if(color == wzqColor.black || color == wzqColor.white){
-                    return true
-                }                
-            }
-            return false
-        }
-
         public getWinner():wzqColor{
             var lines = [Line.L_R, Line.U_D, Line.LU_RD, Line.LD_RU]
             for(var r = 0; r < this.size; r++){
                 for(var c = 0; c < this.size; c++){
                     var pos = this.posChart[r][c]
-                    if(pos.color == wzqColor.black || pos.color == wzqColor.white){
+                    if(pos.Color == wzqColor.black || pos.Color == wzqColor.white){
                         for(var l = 0; l < lines.length; l++){
                             var count = 0
                             for(var i = 1; i <= 4; i++){
                                 var nextColor = this.getNearbyColor(r, c, i, lines[l])
-                                if(nextColor == pos.color){
+                                if(nextColor == pos.Color){
                                     count++
                                 }else{
                                     break
                                 }
                             }
                             if(count == 4){
-                                return pos.color
+                                return pos.Color
                             }
                         }
                     }

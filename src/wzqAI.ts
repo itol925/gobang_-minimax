@@ -80,7 +80,7 @@ namespace WZQ{
             for(var r = 0; r < this.chessboard.Size; r++){
                 for(var c = 0; c < this.chessboard.Size; c++){
                     var pos = this.chessboard.PosChart[r][c]
-                    if(pos.color == wzqColor.none){
+                    if(pos.Color == wzqColor.none){
                         sw += pos.getWei(this.color)
                         ew += pos.getWei(this.enemyColor)                        
                     }
@@ -94,7 +94,7 @@ namespace WZQ{
             for(var r = 0; r < this.chessboard.Size; r++){
                 for(var c = 0; c < this.chessboard.Size; c++){
                     var pos = this.chessboard.PosChart[r][c]
-                    if(pos.color == wzqColor.none){
+                    if(pos.Color == wzqColor.none){
                         if(thisColor == wzqColor.black && pos.isForb(this.chessboard.enableForb33, this.chessboard.enableForb44)){
                             continue
                         }
@@ -172,7 +172,7 @@ namespace WZQ{
                 }else if(p.getWei(this.enemyColor) >= Weight.CHENG_WU){
                     enemyWinPos = p
                 }else{
-                    this.chessboard.put(p.row, p.col, this.color)
+                    this.chessboard.put(p.Row, p.Col, this.color)
                     var val = this.min(deep - 1, alpha)
                     this.chessboard.rollback()
                     if(val > alpha){
@@ -185,12 +185,12 @@ namespace WZQ{
                 }                
             }
             if(selfWinPos){
-                return {row:selfWinPos.row, col:selfWinPos.col}
+                return {row:selfWinPos.Row, col:selfWinPos.Col}
             }else if(enemyWinPos){
-                return {row:enemyWinPos.row, col:enemyWinPos.col}
+                return {row:enemyWinPos.Row, col:enemyWinPos.Col}
             }else{
                 var pos = best[Math.floor(best.length * Math.random())];
-                return {row:pos.row, col:pos.col} 
+                return {row:pos.Row, col:pos.Col} 
             }
         }
         private min(deep, alpha):number{
@@ -202,7 +202,7 @@ namespace WZQ{
                 var options = this.getOptions(this.enemyColor)
                 for(var i = 0; i < options.length; i++){
                     var p = options[i]
-                    this.chessboard.put(p.row, p.col, this.enemyColor)
+                    this.chessboard.put(p.Row, p.Col, this.enemyColor)
                     var val
                     if(this.chessboard.getWinner() == this.enemyColor || this.chessboard.isDraw()){
                         val = this.MIN
@@ -230,7 +230,7 @@ namespace WZQ{
                 var options = this.getOptions(this.color)
                 for(var i = 0; i < options.length; i++){
                     var p = options[i]
-                    this.chessboard.put(p.row, p.col, this.color)
+                    this.chessboard.put(p.Row, p.Col, this.color)
                     var val
                     if(this.chessboard.getWinner() == this.color || this.chessboard.isDraw()){
                         val = this.MAX

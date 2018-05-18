@@ -13,8 +13,8 @@ namespace WZQ{
     }
     
     export class wzqPos{
-        public row:number = -1
-        public col:number = -1
+        private row:number = -1
+        private col:number = -1
         private b_weight = {}
         private w_weight = {}
         private b_sum_weight = 0
@@ -23,7 +23,20 @@ namespace WZQ{
         private w_weight_details = {}
         public fromPlayer:boolean = false
 
-        public color:wzqColor = wzqColor.none
+        private color:wzqColor = wzqColor.none
+        
+        public get Row():number{
+            return this.row
+        }
+        public get Col():number{
+            return this.col
+        }
+        public get Color():wzqColor{
+            return this.color
+        }
+        public set Color(color:wzqColor){
+            this.color = color
+        }
         constructor(r:number, c:number){
             this.row = r
             this.col = c
@@ -135,7 +148,7 @@ namespace WZQ{
             // console.log(str + "\n" + str2)
         }
         public isForb33():boolean{
-            if(this.color != wzqColor.none){
+            if(this.Color != wzqColor.none){
                 return false
             }
             if(this.getWeightCount(wzqColor.black, Weight.CHENG_WU) > 0){ // 有成五
@@ -145,7 +158,7 @@ namespace WZQ{
             return threeNum >= 2
         }
         public isForb44():boolean{
-            if(this.color != wzqColor.none){
+            if(this.Color != wzqColor.none){
                 return false
             }
             if(this.getWeightCount(wzqColor.black, Weight.CHENG_WU) > 0){ // 有成五
