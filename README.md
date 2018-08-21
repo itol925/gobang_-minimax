@@ -5,4 +5,6 @@ gobang/fivechess, minimax Algorithm
 
 
 test site:http://47.74.234.194/gobang/index.html
+
+
 测试地址：http://122.152.204.168/gobang/index.html
